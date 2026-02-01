@@ -1,0 +1,7 @@
+namespace org.example.broken@1.0.0
+
+// Missing closing brace - syntax error
+concept BrokenModel {
+  o String name
+  o Integer value
+

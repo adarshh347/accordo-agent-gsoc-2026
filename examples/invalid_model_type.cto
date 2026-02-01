@@ -1,0 +1,7 @@
+namespace org.example.badtype@1.0.0
+
+// Uses undefined type - semantic error
+concept BadTypeModel {
+  o String name
+  o FakeType value
+}

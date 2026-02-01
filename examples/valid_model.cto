@@ -1,0 +1,13 @@
+namespace org.example.loan@1.0.0
+
+/**
+ * A simple loan agreement model
+ */
+concept LoanAgreement {
+  o String borrowerName
+  o String lenderName
+  o Double loanAmount
+  o Double interestRate
+  o Integer termMonths
+  o DateTime startDate optional
+}
