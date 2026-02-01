@@ -85,6 +85,7 @@ This project **consumes** Accord Project tools via CLI - it does not modify them
 - Python 3.10+
 - Node.js 18+
 - npm
+- [Groq API Key](https://console.groq.com/keys) (free)
 
 ### Setup
 
@@ -105,7 +106,7 @@ pip install -e ".[dev]"
 
 # Set up environment variables
 cp .env.example .env
-# Edit .env with your API keys
+# Edit .env with your Groq API key (free at https://console.groq.com/keys)
 ```
 
 ## 🚀 Usage
@@ -192,4 +193,5 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 
 - [Accord Project](https://accordproject.org/) - For the Concerto modeling language
 - [CrewAI](https://crewai.io/) - For the agentic workflow framework
+- [Groq](https://groq.com/) - For fast, free LLM inference
 - GSoC Mentors: Sanket Shevkar, Niall Roche
