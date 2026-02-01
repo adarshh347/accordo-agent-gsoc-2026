@@ -1,0 +1,22 @@
+{
+  "name": "dummy-accordo-agent",
+  "version": "0.1.0",
+  "description": "Node.js dependencies for Accord Project CLI tools",
+  "private": true,
+  "scripts": {
+    "concerto": "concerto",
+    "test:concerto": "concerto --version"
+  },
+  "dependencies": {
+    "@accordproject/concerto-cli": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "accord-project",
+    "concerto",
+    "cli"
+  ],
+  "license": "Apache-2.0"
+}
