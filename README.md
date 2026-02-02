@@ -111,30 +111,96 @@ cp .env.example .env
 
 ## 🚀 Usage
 
-```bash
-# Run the CLI
-accordo generate "I need a model for a vehicle rental agreement with 
-renter name, vehicle type, rental period, and daily rate"
+### Quick Start (Without pip install)
 
-# Output: ./output/vehicle_rental.cto
+```bash
+# Set your Groq API key
+export GROQ_API_KEY=your_key_here
+
+# Run the CLI directly
+python3 accordo.py generate "I need a loan agreement with borrower and amount"
 ```
+
+### CLI Commands
+
+#### Generate a Model
+```bash
+# Basic usage
+python3 accordo.py generate "A loan agreement with borrower name and loan amount"
+
+# With custom namespace
+python3 accordo.py generate "Vehicle rental contract" -n org.rental
+
+# Output to specific directory
+python3 accordo.py generate "Employee contract" -o ./models
+
+# Quiet mode (just output CTO)
+python3 accordo.py generate "Simple agreement" -q
+```
+
+#### Validate a Model
+```bash
+# Validate a .cto file
+python3 accordo.py validate examples/valid_model.cto
+
+# Verbose output
+python3 accordo.py validate model.cto -v
+```
+
+#### Preview Structured Intent
+```bash
+# See what the agent extracts before generating CTO
+python3 accordo.py preview "A rental agreement with renter and vehicle info"
+```
+
+#### System Info
+```bash
+# Check configuration status
+python3 accordo.py info
+```
+
+### If Installed via pip
+
+```bash
+# After: pip install -e .
+accordo generate "Your description here"
+accordo validate output/model.cto
+accordo preview "Your description"
+accordo info
+```
+
 
 ## 📁 Project Structure
 
 ```
 dummy-accordo-agent/
+├── accordo.py            # CLI entry point (run without pip install)
 ├── src/
 │   ├── agents/           # Agent definitions
-│   │   ├── requirements_agent.py
-│   │   └── model_agent.py
+│   │   ├── requirements_agent.py  # NL → Structured Intent
+│   │   └── model_agent.py         # Intent → Valid .cto
 │   │
 │   ├── tools/            # CLI wrappers
-│   │   └── concerto_tools.py
+│   │   └── concerto_tools.py      # concerto-cli Python wrapper
 │   │
 │   ├── cli/              # Command-line interface
-│   │   └── main.py
+│   │   └── main.py                # Click-based CLI
 │   │
-│   └── prompts/          # LLM prompt templates
+│   ├── prompts/          # LLM prompt templates
+│   │   └── templates.py           # Agent prompts
+│   │
+│   ├── models.py         # Pydantic data models
+│   ├── llm_client.py     # Groq API wrapper
+│   └── workflow.py       # Main orchestrator
+│
+├── scripts/              # Development scripts
+│   ├── verify_tools.py   # Test concerto-cli wrapper
+│   ├── test_models.py    # Test data models
+│   └── demo_workflow.py  # Full workflow demo
+│
+├── docs/                 # Documentation
+│   ├── agent_personas.md # Agent specifications
+│   └── concerto_error_modes.md  # Error handling
 │
 ├── examples/             # Example inputs and outputs
 ├── tests/                # Test suite
