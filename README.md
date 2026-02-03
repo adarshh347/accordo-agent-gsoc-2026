@@ -169,12 +169,33 @@ accordo preview "Your description"
 accordo info
 ```
 
+### Web UI
+
+The project includes a web-based frontend for generating models.
+
+```bash
+# Terminal 1: Start the API server
+python3 api.py
+
+# Terminal 2: Serve the frontend
+python3 -m http.server 3000 -d frontend
+
+# Open http://localhost:3000 in your browser
+```
+
+**API Endpoints:**
+- `POST /generate` - Generate a model from description
+- `POST /validate` - Validate CTO code
+- `GET /health` - Check API status
+- `GET /docs` - Interactive API documentation
+
 
 ## 📁 Project Structure
 
 ```
 dummy-accordo-agent/
-├── accordo.py            # CLI entry point (run without pip install)
+├── accordo.py            # CLI entry point
+├── api.py                # REST API server (FastAPI)
 ├── src/
 │   ├── agents/           # Agent definitions
 │   │   ├── requirements_agent.py  # NL → Structured Intent
@@ -193,6 +214,11 @@ dummy-accordo-agent/
 │   ├── llm_client.py     # Groq API wrapper
 │   └── workflow.py       # Main orchestrator
 │
+├── frontend/             # Web UI
+│   ├── index.html        # Main page
+│   ├── styles.css        # Styling
+│   └── app.js            # Frontend logic
+│
 ├── scripts/              # Development scripts
 │   ├── verify_tools.py   # Test concerto-cli wrapper
 │   ├── test_models.py    # Test data models
@@ -202,7 +228,7 @@ dummy-accordo-agent/
 │   ├── agent_personas.md # Agent specifications
 │   └── concerto_error_modes.md  # Error handling
 │
-├── examples/             # Example inputs and outputs
+├── examples/             # Example .cto files
 ├── tests/                # Test suite
 ├── output/               # Generated .cto files
 │
@@ -210,6 +236,7 @@ dummy-accordo-agent/
 ├── pyproject.toml        # Python project config
 └── README.md
 ```
+
 
 ## 🧪 Development
 
@@ -228,15 +255,15 @@ mypy src/
 
 ### ✅ Included
 
-- Natural language input via CLI
-- CTO model generation
+- Natural language input via CLI and Web UI
+- CTO model generation from natural language
 - Validation via `concerto-cli`
 - Retry on validation failure
+- REST API for frontend integration
 - Save output to file
 
 ### ❌ Explicitly Excluded (for MVP)
 
-- Web UI
 - Multiple LLM provider switching
 - TemplateMark / logic generation
 - Modifying Accord Project repos
@@ -258,6 +285,5 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 ## 🙏 Acknowledgments
 
 - [Accord Project](https://accordproject.org/) - For the Concerto modeling language
-- [CrewAI](https://crewai.io/) - For the agentic workflow framework
 - [Groq](https://groq.com/) - For fast, free LLM inference
 - GSoC Mentors: Sanket Shevkar, Niall Roche
