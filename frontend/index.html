@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accordo Agent - Concerto Model Generator</title>
+    <meta name="description" content="Generate Concerto models from natural language using AI">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Accordo Agent</span>
+            </div>
+            <div class="header-subtitle">
+                GSoC 2026 • Natural Language → Concerto Models
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Panel - Input -->
+            <section class="panel input-panel">
+                <div class="panel-header">
+                    <h2>📝 Describe Your Contract</h2>
+                    <p class="panel-description">Enter a natural language description of the data model you need</p>
+                </div>
+                
+                <div class="panel-content">
+                    <textarea 
+                        id="description-input" 
+                        placeholder="Example: A loan agreement with borrower name, lender name, loan amount, interest rate, and repayment date..."
+                        rows="6"
+                    ></textarea>
+                    
+                    <div class="options-row">
+                        <div class="option-group">
+                            <label for="namespace-input">Namespace (optional)</label>
+                            <input type="text" id="namespace-input" placeholder="org.example.mymodel">
+                        </div>
+                    </div>
+                    
+                    <button id="generate-btn" class="generate-btn">
+                        <span class="btn-icon">🚀</span>
+                        <span class="btn-text">Generate Model</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Panel - Output -->
+            <section class="panel output-panel">
+                <div class="panel-header">
+                    <h2>📄 Generated Concerto Model</h2>
+                    <div class="output-actions">
+                        <button id="copy-btn" class="icon-btn" title="Copy to clipboard" disabled>
+                            📋
+                        </button>
+                        <button id="download-btn" class="icon-btn" title="Download .cto file" disabled>
+                            ⬇️
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel-content">
+                    <div id="output-container" class="output-container">
+                        <div class="placeholder-message">
+                            <div class="placeholder-icon">✨</div>
+                            <p>Your generated Concerto model will appear here</p>
+                            <p class="placeholder-hint">Describe a contract or data model above and click "Generate Model"</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Status Bar -->
+        <div id="status-bar" class="status-bar">
+            <div class="status-indicator" id="status-indicator">
+                <span class="status-dot ready"></span>
+                <span class="status-text">Ready</span>
+            </div>
+            <div class="status-info">
+                Powered by Groq LLM • Validated by Concerto CLI
+            </div>
+        </div>
+
+        <!-- Processing Steps (shown during generation) -->
+        <div id="processing-modal" class="processing-modal hidden">
+            <div class="processing-content">
+                <div class="processing-header">
+                    <h3>🔧 Generating Model</h3>
+                </div>
+                <div class="processing-steps">
+                    <div class="step" id="step-1">
+                        <span class="step-icon">⏳</span>
+                        <span class="step-text">Analyzing requirements...</span>
+                    </div>
+                    <div class="step" id="step-2">
+                        <span class="step-icon">⏳</span>
+                        <span class="step-text">Extracting concepts & fields...</span>
+                    </div>
+                    <div class="step" id="step-3">
+                        <span class="step-icon">⏳</span>
+                        <span class="step-text">Generating CTO code...</span>
+                    </div>
+                    <div class="step" id="step-4">
+                        <span class="step-icon">⏳</span>
+                        <span class="step-text">Validating with concerto-cli...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span class="toast-icon">✓</span>
+        <span class="toast-message"></span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
