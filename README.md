@@ -1,4 +1,4 @@
-# 🤖 Dummy Accordo Agent
+# Dummy Accordo Agent
 
 > **GSoC 2026 MVP** - Agentic Workflow for Drafting Accord Project Templates
 
@@ -6,7 +6,7 @@
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Node.js](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org/)
 
-## 🎯 Project Vision
+## Project Vision
 
 This project provides an **LLM-powered agent workflow** that converts natural language contract requirements into valid [Concerto](https://concerto.accordproject.org/) (`.cto`) models. It acts as an intelligent front-end to the Accord Project tooling.
 
@@ -25,7 +25,7 @@ An agentic workflow that:
 3. **Validates** output using official Accord CLI tools
 4. **Iterates** on errors until the model is valid
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -63,7 +63,7 @@ An agentic workflow that:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 🧠 Core Concepts
+## Core Concepts
 
 ### Agent Personas
 
@@ -78,7 +78,7 @@ This project **consumes** Accord Project tools via CLI - it does not modify them
 
 - `@accordproject/concerto-cli` - For parsing and validating `.cto` models
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 
@@ -109,7 +109,7 @@ cp .env.example .env
 # Edit .env with your Groq API key (free at https://console.groq.com/keys)
 ```
 
-## 🚀 Usage
+## Usage
 
 ### Quick Start (Without pip install)
 
@@ -190,7 +190,7 @@ python3 -m http.server 3000 -d frontend
 - `GET /docs` - Interactive API documentation
 
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 dummy-accordo-agent/
@@ -238,7 +238,7 @@ dummy-accordo-agent/
 ```
 
 
-## 🧪 Development
+## Development
 
 ```bash
 # Run tests
@@ -251,9 +251,9 @@ ruff check src/
 mypy src/
 ```
 
-## 📋 MVP Scope
+## MVP Scope
 
-### ✅ Included
+### Included
 
 - Natural language input via CLI and Web UI
 - CTO model generation from natural language
@@ -262,14 +262,14 @@ mypy src/
 - REST API for frontend integration
 - Save output to file
 
-### ❌ Explicitly Excluded (for MVP)
+### Explicitly Excluded (for MVP)
 
 - Multiple LLM provider switching
 - TemplateMark / logic generation
 - Modifying Accord Project repos
 - Complex multi-agent hierarchies
 
-## 🤝 Contributing
+## Contributing
 
 This is a GSoC 2026 project. Contributions are welcome!
 
@@ -278,11 +278,11 @@ This is a GSoC 2026 project. Contributions are welcome!
 3. Make your changes
 4. Submit a pull request
 
-## 📄 License
+## License
 
 Apache License 2.0 - See [LICENSE](LICENSE) for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Accord Project](https://accordproject.org/) - For the Concerto modeling language
 - [Groq](https://groq.com/) - For fast, free LLM inference
