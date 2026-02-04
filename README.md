@@ -1,4 +1,4 @@
-# Dummy Accordo Agent
+# Accordo Agent Core
 
 > **GSoC 2026 MVP** - Agentic Workflow for Drafting Accord Project Templates
 
