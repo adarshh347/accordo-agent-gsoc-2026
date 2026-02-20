@@ -9,6 +9,7 @@ Run with: python3 api.py
 
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 # Add src to path
@@ -16,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 # Check dependencies
 try:
-    from fastapi import FastAPI, HTTPException
+    from fastapi import FastAPI, HTTPException, UploadFile, File
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel
     import uvicorn
@@ -58,6 +59,13 @@ class GenerateRequest(BaseModel):
 
 class GenerateResponse(BaseModel):
     success: bool
+    cto: str | None = None
+    namespace: str | None = None
+    error: str | None = None
+
+class AudioGenerateResponse(BaseModel):
+    success: bool
+    transcript: str | None = None
     cto: str | None = None
     namespace: str | None = None
     error: str | None = None
@@ -174,6 +182,63 @@ async def generate(request: GenerateRequest):
             status_code=500,
             detail=str(e)
         )
+
+
+@app.post("/generate-from-audio", response_model=AudioGenerateResponse)
+async def generate_from_audio(
+    audio: UploadFile = File(...),
+    namespace: str | None = None,
+    context: str | None = None
+):
+    """Generate a Concerto model from a voice/audio description via Groq Whisper."""
+
+    if not os.getenv("GROQ_API_KEY"):
+        raise HTTPException(
+            status_code=503,
+            detail="GROQ_API_KEY not configured. Please set the environment variable."
+        )
+
+    # Persist the upload to a temp file so the workflow can open it by path
+    suffix = Path(audio.filename).suffix if audio.filename else ".wav"
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            tmp.write(await audio.read())
+            tmp_path = tmp.name
+
+        workflow = AccordoWorkflow(verbose=False)
+        result = workflow.run_from_audio(
+            audio_path=tmp_path,
+            namespace=namespace,
+            context=context
+        )
+
+        if result.success and result.cto_content:
+            import re
+            ns_match = re.search(r'namespace\s+(\S+)', result.cto_content)
+            return AudioGenerateResponse(
+                success=True,
+                transcript=result.transcript,
+                cto=result.cto_content,
+                namespace=ns_match.group(1) if ns_match else None
+            )
+        else:
+            return AudioGenerateResponse(
+                success=False,
+                transcript=result.transcript,
+                error=result.error_message or "Unknown error during generation"
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if tmp_path:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
 
 
 @app.post("/validate", response_model=ValidateResponse)

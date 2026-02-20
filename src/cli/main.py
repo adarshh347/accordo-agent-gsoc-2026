@@ -56,7 +56,7 @@ def check_api_key() -> bool:
         return True
     
     console.print(Panel(
-        "[red bold]❌ GROQ_API_KEY not set![/]\n\n"
+        "[red bold]GROQ_API_KEY not set![/]\n\n"
         "To get a free API key:\n"
         "  1. Go to [link=https://console.groq.com/keys]https://console.groq.com/keys[/link]\n"
         "  2. Sign up / Log in\n"
@@ -90,7 +90,7 @@ def cli():
 
 
 @cli.command()
-@click.argument("description")
+@click.argument("description", required=False, default=None)
 @click.option(
     "--namespace", "-n",
     help="Preferred namespace (e.g., org.example.loan)"
@@ -115,35 +115,56 @@ def cli():
     is_flag=True,
     help="Minimal output"
 )
+@click.option(
+    "--audio", "-a",
+    type=click.Path(exists=True),
+    default=None,
+    help="Path to an audio file to transcribe instead of a text description"
+)
 def generate(
-    description: str,
+    description: Optional[str],
     namespace: Optional[str],
     context: Optional[str],
     output: str,
     no_save: bool,
-    quiet: bool
+    quiet: bool,
+    audio: Optional[str],
 ):
     """
-    Generate a Concerto model from a natural language description.
-    
-    DESCRIPTION is your natural language description of the contract/model
-    you want to create.
-    
+    Generate a Concerto model from a natural language description or audio file.
+
+    DESCRIPTION is your natural language text description of the contract/model.
+    Use --audio / -a instead to provide a voice recording.
+    Exactly one of DESCRIPTION or --audio must be supplied.
+
     Examples:
-    
+
         accordo generate "A loan agreement with borrower, amount, and rate"
-        
-        accordo generate "Vehicle rental contract" -n org.rental
-        
+
+        accordo generate --audio contract.wav
+
+        accordo generate --audio recording.mp3 -n org.rental
+
         accordo generate "Employee contract with salary" -o ./models
     """
+    # Guard: exactly one input source must be provided
+    if audio and description:
+        raise click.UsageError(
+            "Provide either a text DESCRIPTION or --audio, not both."
+        )
+    if not audio and not description:
+        raise click.UsageError(
+            "You must provide a text DESCRIPTION or an audio file via --audio / -a."
+        )
+
     if not check_api_key():
         sys.exit(1)
-    
+
+    input_label = f" Audio: {audio}" if audio else description
     if not quiet:
         console.print(Panel(
-            f"[cyan]{description}[/]",
-            title="📝 Input Description",
+            f"[cyan]{input_label}[/]",
+            title="Input",
             border_style="blue"
         ))
     
@@ -155,12 +176,22 @@ def generate(
             output_dir=output
         )
         
-        result = workflow.run(
-            description=description,
-            namespace=namespace,
-            context=context,
-            save=not no_save
-        )
+        if audio:
+            result = workflow.run_from_audio(
+                audio_path=audio,
+                namespace=namespace,
+                context=context,
+                save=not no_save
+            )
+            if not quiet and result.transcript:
+                console.print(f"\n[dim]📝 Transcript: {result.transcript[:200]}[/]")
+        else:
+            result = workflow.run(
+                description=description,
+                namespace=namespace,
+                context=context,
+                save=not no_save
+            )
         
         if result.success:
             if not quiet:

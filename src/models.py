@@ -175,6 +175,10 @@ class GenerationResult(BaseModel):
         default_factory=list,
         description="List of validation errors encountered"
     )
+    transcript: Optional[str] = Field(
+        None,
+        description="Audio transcript, populated when input was an audio file"
+    )
 
 
 class UserRequest(BaseModel):

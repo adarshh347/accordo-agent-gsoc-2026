@@ -170,6 +170,72 @@ class AccordoWorkflow:
         
         return intent
 
+    def run_from_audio(
+        self,
+        audio_path: str,
+        namespace: Optional[str] = None,
+        context: Optional[str] = None,
+        save: bool = True
+    ) -> GenerationResult:
+        """
+        Transcribe an audio file and run the full generation workflow.
+
+        This is a thin pre-processing step: the audio is transcribed via
+        Groq's Whisper API and the resulting transcript is fed directly into
+        the existing run() method — leaving the core pipeline untouched.
+
+        Args:
+            audio_path: Path to the audio file (mp3, wav, m4a, webm, etc.).
+            namespace: Optional preferred Concerto namespace.
+            context: Optional additional context.
+            save: If True, save the generated .cto file.
+
+        Returns:
+            GenerationResult — same as run(), with .transcript populated.
+        """
+        if self.verbose:
+            print("\n" + "=" * 60)
+            print("🎙️  Accordo Agent - Transcribing Audio Input")
+            print("=" * 60)
+            print(f"\n   Audio file: {audio_path}")
+
+        # Step 0: Transcribe via Groq Whisper (reuses the already-initialised LLM client)
+        transcription = self.analyst.llm.transcribe(audio_path)
+
+        if not transcription.success:
+            return GenerationResult(
+                success=False,
+                error_message=f"Audio transcription failed: {transcription.error}",
+                attempts=0
+            )
+
+        transcript = transcription.text.strip()
+        if not transcript:
+            return GenerationResult(
+                success=False,
+                error_message=(
+                    "Transcription returned an empty result. "
+                    "Check that the audio file contains audible speech."
+                ),
+                attempts=0
+            )
+
+        if self.verbose:
+            preview = transcript[:200] + ("..." if len(transcript) > 200 else "")
+            print(f"\n   📝 Transcript: {preview}")
+
+        # Steps 1–3: Feed transcript into the standard pipeline
+        result = self.run(
+            description=transcript,
+            namespace=namespace,
+            context=context,
+            save=save
+        )
+
+        # Attach transcript so API / CLI consumers can surface it to the user
+        result.transcript = transcript
+        return result
+
 
 # Convenience function for simple usage
 def generate(

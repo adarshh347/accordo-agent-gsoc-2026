@@ -26,6 +26,16 @@ class LLMResponse:
     error: Optional[str] = None
 
 
+@dataclass
+class TranscriptionResponse:
+    """Response from the Groq Whisper transcription API."""
+    text: str
+    model: str
+    success: bool
+    duration_seconds: Optional[float] = None
+    error: Optional[str] = None
+
+
 class GroqClient:
     """
     Client for interacting with Groq's LLM API.
@@ -34,6 +44,7 @@ class GroqClient:
     """
     
     DEFAULT_MODEL = "llama-3.3-70b-versatile"
+    WHISPER_MODEL = "whisper-large-v3-turbo"
     
     def __init__(
         self,
@@ -203,6 +214,62 @@ class GroqClient:
             return parsed, None
         except json.JSONDecodeError as e:
             return None, f"Invalid JSON response: {e}\nContent: {content[:500]}"
+
+    def transcribe(self, audio_path: "str | Path") -> TranscriptionResponse:
+        """
+        Transcribe an audio file using Groq's Whisper API.
+
+        Requires the native 'groq' SDK (not the langchain-groq fallback).
+        Supported formats: mp3, mp4, mpeg, mpga, m4a, wav, webm.
+
+        Args:
+            audio_path: Path to the audio file.
+
+        Returns:
+            TranscriptionResponse with the transcript text.
+        """
+        from pathlib import Path as _Path
+
+        if self._client is None:
+            return TranscriptionResponse(
+                text="",
+                model=self.WHISPER_MODEL,
+                success=False,
+                error=(
+                    "Audio transcription requires the native 'groq' SDK. "
+                    "The langchain-groq fallback does not expose the audio API. "
+                    "Ensure 'groq' is installed: pip install groq"
+                )
+            )
+
+        audio_path = _Path(audio_path)
+        if not audio_path.exists():
+            return TranscriptionResponse(
+                text="",
+                model=self.WHISPER_MODEL,
+                success=False,
+                error=f"Audio file not found: {audio_path}"
+            )
+
+        try:
+            with open(audio_path, "rb") as audio_file:
+                response = self._client.audio.transcriptions.create(
+                    file=(audio_path.name, audio_file),
+                    model=self.WHISPER_MODEL,
+                    response_format="json",
+                )
+            return TranscriptionResponse(
+                text=response.text,
+                model=self.WHISPER_MODEL,
+                success=True,
+            )
+        except Exception as e:
+            return TranscriptionResponse(
+                text="",
+                model=self.WHISPER_MODEL,
+                success=False,
+                error=str(e)
+            )
 
 
 # Global client instance (lazy initialization)
